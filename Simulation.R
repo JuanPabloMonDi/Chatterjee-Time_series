@@ -128,7 +128,7 @@ for (sim in 1:n_sim){
     x6<-append(x6,nuevox)
   }
   
-  #5. Simulamos un SETAR
+  #7. Simulamos un SETAR
   TvarMat <- c(2.9,-0.4,-0.1,-1.5, 0.2,0.3)
   x7<-setar.sim(n=size,B=TvarMat,lag=2, type="simul", nthresh=1, Thresh=2, starting=c(2.8,2.2))
   
