@@ -150,3 +150,20 @@ update_progress <- function(current, total) {
   cat("\r", message)
   flush.console()
 }
+
+# Function to calculate the RMSE
+rmse <- function(estimados, reales) {
+  sqrt(mean((estimados - reales) ^ 2,na.rm=T))
+}
+
+#Function to calculate the MAE
+mae<- function(estimate,real_values){
+  mean(abs(estimate-real_values),na.rm=T)
+}
+
+#Function to calculate the MAD (Median Absolute Deviation)
+
+mad<-function(estimate,real_values){
+  median(abs(estimate-real_values))
+}
+

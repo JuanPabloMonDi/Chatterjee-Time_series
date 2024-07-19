@@ -86,8 +86,9 @@ pcodec<-NULL
 #autok<-NULL
 #autoxi<-NULL
 #autocodec<-NULL
-sizes<-rev(c(50,100,500,1000,2000,5000,10000))
-n_sim<-250
+sizes<-rev(c(100,500,1000,2000,5000))
+sizes<-rev(c(100,500))
+n_sim<-200
 n_size=0
 for (size in sizes){
   n_size=n_size+1
@@ -163,9 +164,12 @@ for (sim in 1:n_sim){
   
   
       #calculate the partial correlation matrix for each correlation
+        
+      #We found a faster method for Pearson and Spearman
       corP<-pcor(data,method="pearson")
       corSp<-pcor(data,method="spearman")
-      corK<-pcor(data,method="kendall")
+      if (size<=2000){
+      corK<-pcor(data,method="kendall")}
       corX<-partcor(data,method = "xi")
   
       
@@ -177,23 +181,27 @@ for (sim in 1:n_sim){
       #autocorX<-xicor(data)
       
       #Since we are only interested in the correlation with xt, we only consider the first row
+      
+      #The pearson and Spearman will be made by the pacf function becuase is faster  
       corP<-corP$estimate[1,]
       corSp<-corSp$estimate[1,]
-      corK<-corK$estimate[1,]
+      if (size<=2000){
+      corK<-corK$estimate[1,]}
       corX<-corX[1,]
-      #autocorP<-autocorP$estimate[1,]
-      #autocorSp<-autocorSp$estimate[1,]
-      #autocorK<-autocorK$estimate[1,]
-      #autocorX<-aut
+      
       
       
       corPearson<-append(corPearson, corP[lag+1])
       corSpearman<-append(corSpearman,corSp[lag+1])
-      corKendall<-append(corKendall,corK[lag+1])
+      if (size<=2000){corKendall<-append(corKendall,corK[lag+1])}
       corXi<-append(corXi,corX[lag+1])
-      #print(paste("|--lag ",lag,"/",lag.max ,"|--serie",serie, "|--simulation ",sim,"/",n_sim," |-- size",size))
       }
-      #Confidence intervals
+    
+    #corPearson<-pacf(series[serie],plot=F,lag.max = lag.max)
+    #corPearson<-corPearson$acf
+    #corSpearman<-pacf(rank(series[serie]),plot=F,lag.max = lag.max)
+    #corSpearman<-corSpearman$acf
+    #Confidence intervals
       #For Pearson the variance is 1/N
       Plags<-data.frame(lag=(index(corPearson)-1),value=corPearson)
       #plot(corPearson[1:lag],type="h")
@@ -209,6 +217,7 @@ for (sim in 1:n_sim){
       #plot(corSpearman,type="h")
       #abline(h=-qnorm(0.975)*sqrt(1/(size-1)))
       #abline(h=qnorm(0.975)*sqrt(1/(size-1)))
+      
       SPlags<-data.frame(lag=(index(corSpearman)-1),value=corSpearman)
       SPlags<-SPlags[abs(SPlags$value)>qnorm(0.975)*sqrt(1/(size-1)),]
       SPlags<-SPlags$lag
@@ -220,16 +229,18 @@ for (sim in 1:n_sim){
       #plot(corKendall[1:lag],type="h")
       #abline(h=qnorm(0.975)*sqrt(2*(2*size+5)/(9*size*(size-1))))
       #abline(h=-qnorm(0.975)*sqrt(2*(2*size+5)/(9*size*(size-1))))
+      if (size<=2000){
       Klags<-data.frame(lag=(index(corKendall)-1),value=corKendall)
       Klags<-Klags[abs(Klags$value)>(qnorm(0.975)*sqrt(2*(2*size+5)/(9*size*(size-1)))),]
       Klags<-Klags$lag
       nk<-length(Klags)
       pk<-rbind(pk,data.frame(size=size,sim=sim, serie=serie,p1=ifelse(nk>=1, Klags[[length(Klags)]], 0),p2=ifelse(nk>=2, Klags[[(length(Klags)-1)]], 0),p3=ifelse(nk>=3, Klags[[(length(Klags)-2)]], 0)))
-    
+      }
       #For Xi the variance is 2/5N
-      plot(corXi[1:lag],type="h")
-      abline(h=qnorm(0.975)*sqrt(2/(5*size)),col="red",lw=1)
-      abline(h=-qnorm(0.975)*sqrt(2/(5*size)),col="red",lw=1)
+      #plot(corXi[1:lag],type="h")
+      #abline(h=qnorm(0.975)*sqrt(2/(5*size)),col="red",lw=1)
+      #abline(h=-qnorm(0.975)*sqrt(2/(5*size)),col="red",lw=1)
+      
       #Get the 3 maximum autocorrelations
       Xilags<-data.frame(lag=(index(corXi)-1),value=corXi)
       Xilags<-Xilags[abs(Xilags$value)>(qnorm(0.975)*sqrt(2/(5*size))),]
@@ -237,9 +248,7 @@ for (sim in 1:n_sim){
       nxi=length(Xilags)
       pxi<-rbind(pxi,data.frame(size=size,sim=sim, serie=serie,p1=ifelse(nxi>=1, Xilags[[length(Xilags)]], 0),p2=ifelse(nxi>=2, Xilags[[(length(Xilags)-1)]], 0),p3=ifelse(nxi>=3, Xilags[[(length(Xilags)-2)]], 0)))
 
-      #codecM<-append(codecM,codec(data[,1],data[,ncol(data)],data[,2:(ncol(data)-1)]))
-        
-      #Now, with the coefficient of Azadka-Chatterjee
+     #Now, with the coefficient of Azadka-Chatterjee
       codecM<-foci(data$xt,data[2:(lag+1)],numCores = 1)
       codecM<-codecM$selectedVar$index
       ncodec=length(codecM)
@@ -261,27 +270,27 @@ pxi_long <- tidyr::pivot_longer(pxi, cols = c(p1,p2,p3), names_to = "Estimator",
 
 pcodec_long <- tidyr::pivot_longer(pcodec, cols = c(p1,p2,p3), names_to = "Estimator", values_to = "Value")
 
-#Plots of the series
+### ------------------- Plots of the series -----------------------
 
 
-#Serie 1
+#### ------------------------------- Serie 1 -------------------------
 
 ggplot(pp_long[pp_long$serie=="x1",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.3)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.3)+ geom_hline(yintercept = 5,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 ggplot(psp_long[psp_long$serie=="x1",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 5,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 
 ggplot(pk_long[pk_long$serie=="x1",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 5,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
@@ -289,23 +298,23 @@ ggplot(pk_long[pk_long$serie=="x1",], aes(x=factor(size), y=Value,fill = factor(
 ggplot(pxi_long[pxi_long$serie=="x1",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
   geom_boxplot(width=0.5)+ 
-  geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
+  geom_hline(yintercept = 5,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 ggplot(pcodec_long[pcodec_long$serie=="x1",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
   geom_boxplot(width=0.3)+
-  geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
+  geom_hline(yintercept = 5,colour="blue",lwd=1.25)+
   xlab("Size")+
   theme_bw()+theme(legend.position = "none")+
   facet_wrap(~Estimator,scales = "free_y",labeller = labeller(variable=c(p1="1st Max",p2="2nd Max",p3="3rd Max")))
 
-#Serie 2
+#### --------------------- Serie 2 ---------------------------
 
 ggplot(pp_long[pp_long$serie=="x2",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
   geom_boxplot(width=0.5)+
-  geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
+  geom_hline(yintercept = 1,colour="blue",lwd=1.25)+
   xlab("Size")+
   facet_wrap(~Estimator,scales = "free_y")+
   theme_bw()+theme(legend.position = "none")
@@ -314,7 +323,7 @@ ggplot(pp_long[pp_long$serie=="x2",], aes(x=factor(size), y=Value,fill = factor(
 ggplot(psp_long[psp_long$serie=="x2",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
   geom_boxplot(width=0.5)+
-  geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
+  geom_hline(yintercept = 1,colour="blue",lwd=1.25)+
   xlab("Size")+
   facet_wrap(~Estimator,scales = "free_y")+
   theme_bw()+theme(legend.position = "none")
@@ -323,33 +332,33 @@ ggplot(psp_long[psp_long$serie=="x2",], aes(x=factor(size), y=Value,fill = facto
 
 ggplot(pk_long[pk_long$serie=="x2",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 1,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 
 ggplot(pxi_long[pxi_long$serie=="x2",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   #geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 1,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 ggplot(pcodec_long[pcodec_long$serie=="x2",], aes(x=factor(size), y=Value,fill = factor(size))) + 
-  #geom_violin(trim = F)+
+  geom_violin(trim = F)+
   geom_boxplot(width=0.5)+
-  geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
+  geom_hline(yintercept = 1,colour="blue",lwd=1.25)+
   xlab("Size")+
   theme_bw()+theme(legend.position = "none")+
   facet_wrap(~Estimator,scales = "free_y",labeller = labeller(variable=c(p1="1st Max",p2="2nd Max",p3="3rd Max")))
 
-#Serie 3
+#### ---------------------- Serie 3 --------------------------
 ggplot(pp_long[pp_long$serie=="x3",], aes(x=factor(size), y=Value,fill = factor(size))) + 
-  #geom_violin(trim = F)+
+  geom_violin(trim = F)+
   geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 ggplot(psp_long[psp_long$serie=="x3",], aes(x=factor(size), y=Value,fill = factor(size))) + 
-  #geom_violin(trim = F)+
+  geom_violin(trim = F)+
   geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
@@ -363,12 +372,12 @@ ggplot(pk_long[pk_long$serie=="x3",], aes(x=factor(size), y=Value,fill = factor(
 
 
 ggplot(pxi_long[pxi_long$serie=="x3",], aes(x=factor(size), y=Value,fill = factor(size))) + 
-  #geom_violin(trim = F)+
+  geom_violin(trim = F)+
   geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 ggplot(pcodec_long[pcodec_long$serie=="x3",], aes(x=factor(size), y=Value,fill = factor(size))) + 
-  #geom_violin(trim = F)+
+  geom_violin(trim = F)+
   geom_boxplot(width=0.5)+
   geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
   xlab("Size")+
@@ -376,37 +385,37 @@ ggplot(pcodec_long[pcodec_long$serie=="x3",], aes(x=factor(size), y=Value,fill =
   facet_wrap(~Estimator,scales = "free_y",labeller = labeller(variable=c(p1="1st Max",p2="2nd Max",p3="3rd Max")))
 
 
-#Serie 4
+#### ----------------------- Serie 4 --------------------
 
 ggplot(pp_long[pp_long$serie=="x4",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 ggplot(psp_long[psp_long$serie=="x4",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 
 ggplot(pk_long[pk_long$serie=="x4",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 
 ggplot(pxi_long[pxi_long$serie=="x4",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 ggplot(pcodec_long[pcodec_long$serie=="x4",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
   geom_boxplot(width=0.5)+
-  geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_hline(yintercept = 3,colour="blue",lwd=1.25)+
   xlab("Size")+
   theme_bw()+theme(legend.position = "none")+
   facet_wrap(~Estimator,scales = "free_y",labeller = labeller(variable=c(p1="1st Max",p2="2nd Max",p3="3rd Max")))
@@ -415,34 +424,71 @@ ggplot(pcodec_long[pcodec_long$serie=="x4",], aes(x=factor(size), y=Value,fill =
 
 
 
-#Serie 5
+#### ----------------------- Serie 5 -------------------
 
 ggplot(pp_long[pp_long$serie=="x5",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.3)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.3)+ geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 ggplot(psp_long[psp_long$serie=="x5",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 
 ggplot(pk_long[pk_long$serie=="x5",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 
 
 ggplot(pxi_long[pxi_long$serie=="x5",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
-  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
   xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
 
 ggplot(pcodec_long[pcodec_long$serie=="x5",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.3)+
+  geom_hline(yintercept = 4,colour="blue",lwd=1.25)+
+  xlab("Size")+
+  theme_bw()+theme(legend.position = "none")+
+  facet_wrap(~Estimator,scales = "free_y",labeller = labeller(variable=c(p1="1st Max",p2="2nd Max",p3="3rd Max")))
+
+
+
+#### --------------- Serie 6 ------------------
+
+
+ggplot(pp_long[pp_long$serie=="x6",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.3)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+
+ggplot(psp_long[psp_long$serie=="x6",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+
+
+ggplot(pk_long[pk_long$serie=="x6",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+
+ggplot(pxi_long[pxi_long$serie=="x6",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+ggplot(pcodec_long[pcodec_long$serie=="x6",], aes(x=factor(size), y=Value,fill = factor(size))) + 
   geom_violin(trim = F)+
   geom_boxplot(width=0.3)+
   geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
@@ -452,20 +498,52 @@ ggplot(pcodec_long[pcodec_long$serie=="x5",], aes(x=factor(size), y=Value,fill =
 
 
 
+#### --------------- Serie 7 ------------------
+
+ggplot(pp_long[pp_long$serie=="x7",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.3)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+
+ggplot(psp_long[psp_long$serie=="x7",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+
+ggplot(pk_long[pk_long$serie=="x7",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+
+ggplot(pxi_long[pxi_long$serie=="x7",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.5)+ geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+facet_wrap(~Estimator,scales = "free_y")+theme_bw()+theme(legend.position = "none")
+
+ggplot(pcodec_long[pcodec_long$serie=="x7",], aes(x=factor(size), y=Value,fill = factor(size))) + 
+  geom_violin(trim = F)+
+  geom_boxplot(width=0.3)+
+  geom_hline(yintercept = 2,colour="blue",lwd=1.25)+
+  xlab("Size")+
+  theme_bw()+theme(legend.position = "none")+
+  facet_wrap(~Estimator,scales = "free_y",labeller = labeller(variable=c(p1="1st Max",p2="2nd Max",p3="3rd Max")))
+
+
+
+
+## -----Meausing the error ----------------
   
-  
-  #rmse
-# Valores reales para las series
-valores_reales <- c(3, 4, 2, 2, 2)
-names(valores_reales) <- c("x1","x2","x3","x4","x5")
+# Real value of the parameters
+valores_reales <- c(5,1,2,3, 4, 2, 2)
+names(valores_reales) <- c("x1","x2","x3","x4","x5","x6","x7")
 
 
-# Función para calcular el RMSE
-rmse <- function(estimados, reales) {
-  sqrt(mean((estimados - reales) ^ 2,na.rm=T))
-}
 
-# Añadir los valores reales a los datos
+
+# Add the real parameter values to the table
 pp <- pp %>%
   mutate(valor_real = valores_reales[as.character(serie)])
 psp <- psp %>%
@@ -478,8 +556,8 @@ pcodec <- pcodec %>%
   mutate(valor_real = valores_reales[as.character(serie)])
 
 
-# Calcular RMSE para cada combinación de tamaño y serie
-resultados_rmsePearson <- pp %>%
+#### ----------------- Root Mean Squared Error (RMSE) ----------------------- 
+results_rmsePearson <- pp %>%
   group_by(size, serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, valor_real),
@@ -488,7 +566,7 @@ resultados_rmsePearson <- pp %>%
   ) %>%
   ungroup()
 
-resultados_rmseSpearman <- psp %>%
+results_rmseSpearman <- psp %>%
   group_by(size, serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, valor_real),
@@ -497,7 +575,7 @@ resultados_rmseSpearman <- psp %>%
   ) %>%
   ungroup()
 
-resultados_rmseKendall <- pk %>%
+results_rmseKendall <- pk %>%
   group_by(size, serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, valor_real),
@@ -506,7 +584,7 @@ resultados_rmseKendall <- pk %>%
   ) %>%
   ungroup()
 
-resultados_rmseXi <- pxi %>%
+results_rmseXi <- pxi %>%
   group_by(size, serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, valor_real),
@@ -515,7 +593,7 @@ resultados_rmseXi <- pxi %>%
   ) %>%
   ungroup()
 
-resultados_rmseCodec <- pcodec %>%
+results_rmseCodec <- pcodec %>%
   group_by(size, serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, valor_real),
@@ -523,4 +601,147 @@ resultados_rmseCodec <- pcodec %>%
     RMSE_p3 = rmse(p3, valor_real)
   ) %>%
   ungroup()
+
+
+#### -------- Mean Absolute Error (MAE) -----------
+
+results_maePearson <- pp %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAE_p1 = mae(p1, valor_real),
+    MAE_p2 = mae(p2, valor_real),
+    MAE_p3 = mae(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_maeSpearman <- psp %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAE_p1 = mae(p1, valor_real),
+    MAE_p2 = mae(p2, valor_real),
+    MAE_p3 = mae(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_maeKendall <- pk %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAE_p1 = mae(p1, valor_real),
+    MAE_p2 = mae(p2, valor_real),
+    MAE_p3 = mae(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_maeXi <- pxi %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAE_p1 = mae(p1, valor_real),
+    MAE_p2 = mae(p2, valor_real),
+    MAE_p3 = mae(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_maeCodec <- pcodec %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAE_p1 = mae(p1, valor_real),
+    MAE_p2 = mae(p2, valor_real),
+    MAE_p3 = mae(p3, valor_real)
+  ) %>%
+  ungroup()
+
+
+
+#### -------- Median Absolute Deviation (MAD) -------
+results_madPearson <- pp %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAD_p1 = mad(p1, valor_real),
+    MAD_p2 = mad(p2, valor_real),
+    MAD_p3 = mad(p3, valor_real)
+  ) %>%
+  ungroup()
+
+
+results_madSpearman <- psp %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAD_p1 = mad(p1, valor_real),
+    MAD_p2 = mad(p2, valor_real),
+    MAD_p3 = mad(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_madKendall <- pk %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAD_p1 = mad(p1, valor_real),
+    MAD_p2 = mad(p2, valor_real),
+    MAD_p3 = mad(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_madXi <- pxi %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAD_p1 = mad(p1, valor_real),
+    MAD_p2 = mad(p2, valor_real),
+    MAD_p3 = mad(p3, valor_real)
+  ) %>%
+  ungroup()
+
+results_madCodec <- pcodec %>%
+  group_by(size, serie) %>%
+  summarise(
+    MAD_p1 = mad(p1, valor_real),
+    MAD_p2 = mad(p2, valor_real),
+    MAD_p3 = mad(p3, valor_real)
+  ) %>%
+  ungroup()
+
+
+#### --------- plots of errors -------------------------
+
+## Unifying the rmse error for all coefficients
+results_rmseCodec$Coefficient<-"Codec"
+results_rmseKendall$Coefficient<-"Kendall"
+results_rmsePearson$Coefficient<-"Pearson"
+results_rmseSpearman$Coefficient<-"Spearman"
+results_rmseXi$Coefficient<-"Xi"
+resultsRMSE<-rbind(results_rmsePearson,results_rmseSpearman,results_rmseXi,results_rmseCodec)
+
+## Now, unifying the MAE
+results_maeCodec$Coefficient<-"Codec"
+results_maeKendall$Coefficient<-"Kendall"
+results_maePearson$Coefficient<-"Pearson"
+results_maeSpearman$Coefficient<-"Spearman"
+results_maeXi$Coefficient<-"Xi"
+resultsMAE<-rbind(results_maePearson,results_maeSpearman,results_maeXi,results_maeCodec)
+
+## Finally, unifying the MAD
+results_madCodec$Coefficient<-"Codec"
+results_madKendall$Coefficient<-"Kendall"
+results_madPearson$Coefficient<-"Pearson"
+results_madSpearman$Coefficient<-"Spearman"
+results_madXi$Coefficient<-"Xi"
+resultsMAD<-rbind(results_madPearson,results_madSpearman,results_madXi,results_madCodec)
+
+##Now, unifying the errors
+resultsRMSE$Error<-"RMSE"
+resultsMAE$Error<-"MAE"
+resultsMAD$Error<-"MAD"
+colnames(resultsRMSE)<-c("Size","Serie","p1","p2","p3","Coefficient","Error")
+colnames(resultsMAE)<-colnames(resultsMAD)<-colnames(resultsRMSE)
+Errors<-rbind(resultsRMSE,resultsMAE,resultsMAD)
+
+Errors <- tidyr::pivot_longer(Errors, cols = c(p1,p2,p3), names_to = "Estimator", values_to = "Value")
+
+
+
+ggplot(data=Errors[Errors$Error=="MAE",], aes(x=as.numeric(Size), y=Value,colour = Serie)) +
+  #theme_bw()+
+  geom_line()+
+  facet_grid(Coefficient~Estimator,scales="free_y")+
+  xlab("Size")
+theme(legend.position = "none")
 
