@@ -87,8 +87,8 @@ pcodec<-NULL
 #autoxi<-NULL
 #autocodec<-NULL
 sizes<-rev(c(100,500,1000,2000,5000))
-sizes<-rev(c(100,500))
-n_sim<-200
+sizes<-(c(100,500,1000,2000,5000))
+n_sim<-100
 n_size=0
 for (size in sizes){
   n_size=n_size+1
@@ -170,7 +170,7 @@ for (sim in 1:n_sim){
       corSp<-pcor(data,method="spearman")
       if (size<=2000){
       corK<-pcor(data,method="kendall")}
-      corX<-partcor(data,method = "xi")
+      ##corX<-partcor(data,method = "xi")
   
       
       #Now, we calculate the autocorrelation  matrix for each correlation
@@ -187,14 +187,14 @@ for (sim in 1:n_sim){
       corSp<-corSp$estimate[1,]
       if (size<=2000){
       corK<-corK$estimate[1,]}
-      corX<-corX[1,]
+      ##corX<-corX[1,]
       
       
       
       corPearson<-append(corPearson, corP[lag+1])
       corSpearman<-append(corSpearman,corSp[lag+1])
       if (size<=2000){corKendall<-append(corKendall,corK[lag+1])}
-      corXi<-append(corXi,corX[lag+1])
+      ##corXi<-append(corXi,corX[lag+1])
       }
     
     #corPearson<-pacf(series[serie],plot=F,lag.max = lag.max)
@@ -242,17 +242,17 @@ for (sim in 1:n_sim){
       #abline(h=-qnorm(0.975)*sqrt(2/(5*size)),col="red",lw=1)
       
       #Get the 3 maximum autocorrelations
-      Xilags<-data.frame(lag=(index(corXi)-1),value=corXi)
-      Xilags<-Xilags[abs(Xilags$value)>(qnorm(0.975)*sqrt(2/(5*size))),]
-      Xilags<-Xilags$lag#[(nrow(Xilags)-2):nrow(Xilags)]
-      nxi=length(Xilags)
-      pxi<-rbind(pxi,data.frame(size=size,sim=sim, serie=serie,p1=ifelse(nxi>=1, Xilags[[length(Xilags)]], 0),p2=ifelse(nxi>=2, Xilags[[(length(Xilags)-1)]], 0),p3=ifelse(nxi>=3, Xilags[[(length(Xilags)-2)]], 0)))
+      #Xilags<-data.frame(lag=(index(corXi)-1),value=corXi)
+      #Xilags<-Xilags[abs(Xilags$value)>(qnorm(0.975)*sqrt(2/(5*size))),]
+      #Xilags<-Xilags$lag#[(nrow(Xilags)-2):nrow(Xilags)]
+      #nxi=length(Xilags)
+      #pxi<-rbind(pxi,data.frame(size=size,sim=sim, serie=serie,p1=ifelse(nxi>=1, Xilags[[length(Xilags)]], 0),p2=ifelse(nxi>=2, Xilags[[(length(Xilags)-1)]], 0),p3=ifelse(nxi>=3, Xilags[[(length(Xilags)-2)]], 0)))
 
      #Now, with the coefficient of Azadka-Chatterjee
-      codecM<-foci(data$xt,data[2:(lag+1)],numCores = 1)
-      codecM<-codecM$selectedVar$index
-      ncodec=length(codecM)
-      pcodec<-rbind(pcodec,data.frame(size=size,sim=sim, serie=serie,p1=ifelse(ncodec>=1, max(codecM), 0),p2=ifelse(ncodec>=2, sort(codecM, TRUE)[2], 0),p3=ifelse(ncodec>=3,sort(codecM, TRUE)[3], 0)))
+      #codecM<-foci(data$xt,data[2:(lag+1)],numCores = 1)
+      #codecM<-codecM$selectedVar$index
+      #ncodec=length(codecM)
+      #pcodec<-rbind(pcodec,data.frame(size=size,sim=sim, serie=serie,p1=ifelse(ncodec>=1, max(codecM), 0),p2=ifelse(ncodec>=2, sort(codecM, TRUE)[2], 0),p3=ifelse(ncodec>=3,sort(codecM, TRUE)[3], 0)))
   } #End series iterations
 } #End simulations
 }#End sizes 
@@ -738,7 +738,7 @@ Errors <- tidyr::pivot_longer(Errors, cols = c(p1,p2,p3), names_to = "Estimator"
 
 
 
-ggplot(data=Errors[Errors$Error=="MAE",], aes(x=as.numeric(Size), y=Value,colour = Serie)) +
+ggplot(data=Errors[Errors$Error=="RMSE",], aes(x=as.numeric(Size), y=Value,colour = Serie)) +
   #theme_bw()+
   geom_line()+
   facet_grid(Coefficient~Estimator,scales="free_y")+
