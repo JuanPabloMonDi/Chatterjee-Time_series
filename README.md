@@ -16,8 +16,8 @@ This repository contains the following components:
 
 ### 📁 Folders
 
-1.  **data**: Contains all the necessary input data (births and deaths by year), except the previously mentioned files.
-2.  **Maps and Tables**: Stores all the maps, plots, and tables used in the article.
+1.  **results:** Contains csv files with the estimations made by each auto-association method.
+2.  **plots:** Stores all the plots and tables used in the article.
 3.  **Miscellaneous Material**: Includes supplementary materials, mainly from earlier versions of the paper.
 
 ### 📄 R Scripts
@@ -29,4 +29,4 @@ This repository contains the following components:
 
 - If necessary, we may add a link to a Google Drive folder with some csv files or RData to give the option of avoid intensive computation parts.
 
-- In case you wanna cite this GitHub, please use the same citation of the paper. (You will find it here soon 😊)
+- In case you wanna cite this GitHub, please use the same citation of the paper.
