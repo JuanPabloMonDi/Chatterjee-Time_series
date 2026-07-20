@@ -4,7 +4,7 @@
 >
 > The construction of this README is still in progress and we may do some updates.
 
-On this GitHub we provide all the code and files used in the paper *Measuring General Associations in Time Series: An Adaptation and Empirical Evaluation of the CODEC Coefficient in Determining Autoregressive Dynamics (preprint)*
+On this GitHub we provide all the code and files used in the paper *Measuring General Associations in Time Series: An Adaptation and Empirical Evaluation of the CODEC Coefficient in Determining Autoregressive Dynamics (preprint)* by Juan Pablo Montaño & Mario Arrieta-Prieto
 
 ## Abstract
 
