@@ -22,8 +22,9 @@ This repository contains the following components:
 
 ### 📄 R Scripts
 
-4.  **Simulation.R**: Monte Carlo simulation. This code constructs each of the time series generating processes and implements the auto-association measures considered for estimating the autocorrelation parameter $p$. The results are saved in the *`results`* folder.
-5.  **plots.R**: After running *Simulation.R*, this script generates the plots shown in the paper (output is saved in the *`plots`* folder).
+4.  **Functions.R:** This file defines some functions that are used in the *`Simulation.R`* file.
+5.  **Simulation.R**: Monte Carlo simulation. This code constructs each of the time series generating processes and implements the auto-association measures considered for estimating the autocorrelation parameter $p$. The results are saved in the *`results`* folder.
+6.  **plots.R**: After running *Simulation.R*, this script generates the plots shown in the paper (output is saved in the *`plots`* folder).
 
 ## Next steps:
 
