@@ -218,7 +218,7 @@ results_maeCodec <- results_foci %>%
 results_maeAIC <- results_aic %>%
   group_by(size, serie,metric) %>%
   summarise(
-    MAE_p = mae(p1, sim_value),
+    MAE_p1 = mae(p1, sim_value),
     .groups = "drop"
   ) %>%
   ungroup()
@@ -293,7 +293,9 @@ results_rmseKendall$Coefficient<-"Kendall"
 results_rmsePearson$Coefficient<-"Pearson"
 results_rmseSpearman$Coefficient<-"Spearman"
 results_rmseXi$Coefficient<-"Xi"
-resultsRMSE<-rbind(results_rmsePearson,results_rmseSpearman,results_rmseKendall,results_rmseXi,results_rmseCodec)
+resultsRMSE<-rbind(results_rmsePearson,results_rmseSpearman,
+                   results_rmseKendall,results_rmseXi,
+                   results_rmseCodec)
 
 ## Now, unifying the MAE
 results_maeCodec$Coefficient<-"Codec"
@@ -309,6 +311,7 @@ results_madKendall$Coefficient<-"Kendall"
 results_madPearson$Coefficient<-"Pearson"
 results_madSpearman$Coefficient<-"Spearman"
 results_madXi$Coefficient<-"Xi"
+
 resultsMAD<-rbind(results_madPearson,results_madSpearman,results_madXi,results_madCodec)
 
 ##Now, unifying the errors
@@ -321,12 +324,113 @@ Errors<-rbind(resultsRMSE,resultsMAE,resultsMAD)
 
 Errors <- tidyr::pivot_longer(Errors, cols = c(p1,p2,p3), names_to = "Estimator", values_to = "Value")
 
+# Now the AIC
+results_rmseAIC<-results_rmseAIC%>%rename(Coefficient=metric,Value=RMSE_p1)%>%mutate(Error="RMSE",Estimator="p1")
+results_maeAIC<-results_maeAIC%>%rename(Coefficient=metric,Value=MAE_p1)%>%mutate(Error="MAE", Estimator="p1")
+results_madAIC<-results_madAIC%>%rename(Coefficient=metric,Value=MAD_p1)%>%mutate(Error="MAD", Estimator="p1")
+errors_AIC<-rbind(results_rmseAIC,results_maeAIC,results_madAIC)
+colnames(errors_AIC)[c(1,2)]<-c("Size","Serie")
+Errors<-rbind(Errors,errors_AIC)
 
 
-ggplot(data=Errors[Errors$Error=="RMSE",], aes(x=as.numeric(Size), y=Value,colour = Serie)) +
-  #theme_bw()+
-  geom_line()+
-  facet_grid(Coefficient~Estimator,scales="fixed")+
-  xlab("Size")+theme_bw()
-theme(legend.position = "none")
+
+Errors<-Errors%>%mutate(name_serie=case_when(
+  Serie=="x1"~"AR(5)",
+  Serie=="x2"~"ARMA(1,3)",
+  Serie=="x3"~"ARIMA(2,1,1)",
+  Serie=="x4"~"NLAR(3)",
+  Serie=="x5"~"NLAR(4)",
+  Serie=="x6"~"NLARMA(2,2)",
+  Serie=="x7"~"SETAR(2,2,[2])",
+  Serie=="x8"~"ARIMA(2,1,1) \nDifferenciated",
+  Serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  Serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  Serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  Serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  Serie=="x13"~"ARIMA(3,1,0)",
+  Serie=="x14"~"ARIMA(3,1,0) \nDifferenciated",
+))
+
+
+error_plot<-function(error="RMSE",estimator="p1",measures=c("AIC","BIC","Codec","Pearson"),data=Errors,geometry="line", save=TRUE){
+  
+  k <- as.numeric(sub("^p", "", estimator))
+  plot<-ggplot(data=data%>%filter(Error==error,
+                            Estimator==estimator,
+                            Coefficient%in%measures
+                            ),
+               aes(
+                 x = as.numeric(Size),
+                 y = Value,
+                 colour = Coefficient,
+                 linetype = Coefficient,
+                 linewidth = Coefficient
+                 )) +
+    geom_point(size=1.2)
+  if(geometry=="line"){plot<-plot+geom_line()}
+  if(geometry=="smooth"){plot<-plot+geom_smooth(se=FALSE)}
+  plot<-plot+scale_colour_manual(
+    values = c(
+      "Codec" = "black",
+      "AIC" = "gray30",
+      "BIC" = "gray50",
+      "Pearson" = "gray20"
+      )
+    )+
+    scale_linetype_manual(
+      values = c(
+        "Codec" = "solid",
+        "AIC" = "dashed",
+        "BIC" = "dotdash",
+        "Pearson" = "dotted"
+        )
+      ) +
+  
+  scale_linewidth_manual(
+    values = c(
+      "Codec" = 1.2,
+      "AIC" = 0.8,
+      "BIC" = 0.8,
+      "Pearson" = 0.8
+    ),
+    guide = "none"
+  ) +
+  facet_wrap(~name_serie, 
+             nrow=2)+
+  labs(x="Size",
+       y=bquote(hat(italic(p))[.(k)]),
+       colour="Measure",
+       linetype="Measure")+
+  theme_linedraw(paper = "white", ink = "gray20") +
+  theme(
+    panel.grid.major = element_blank(), #Panel of the background
+    panel.grid.minor = element_blank(), #Panel inside each serie plot
+    strip.background = element_rect(fill = "white", color = "black"), #Back ground of each serie title
+    strip.text = element_text(color = "black", size = 8.5, face = "bold"), #Title of each serie
+    axis.title.x = element_text(size=11, face = "bold"), # hat p axis
+    axis.title.y = element_text(size=11, face = "bold"), #"Size" Axis
+    legend.position = "bottom",
+    legend.text = element_text(size = 11), #AIC, BIC, Codec and Pearson text
+    legend.title = element_text(size = 12, face = "bold"), #"Measure" text
+    legend.key.width = unit(1.5, "cm") #Width of legend icon
+  )
+  if(save==TRUE){
+    ggsave(filename=paste0("plots/errors/",error,"_",estimator,"_",geometry,".pdf"),
+           plot=plot,units = "cm",
+           width = 42,height = 18, dpi=600)
+  }
+  
+  return(plot)
+}
+
+
+assoc<-c("AIC","BIC","Codec","Pearson")
+for(er in unique(Errors$Error)){
+  for(param in unique(Errors$Estimator)){
+    if(param!="p1"){assoc<-c("Codec","Pearson")}
+    for(geom in c("line","smooth")){
+      error_plot(error=er,estimator = param,measures = assoc,geometry = geom)
+    }
+  }
+}
 
