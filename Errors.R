@@ -425,3 +425,177 @@ for(er in unique(Errors$Error)){
   }
 }
 
+
+
+# Probability of a correct estimation --------------------------------------------
+
+#This analysis is for foci only. 
+#The idea es to evaluate the probability P(|\hat p_1-p|<=k)
+#Where k is a tolerance error
+#Since p is discrete and have non negative support. the values of k are integers
+
+#As usual, we use the observed proportions as an estimation of  probabilities
+equal_prob<-function(k,estim="p1",data=results_foci){
+  prob<-mean(abs(data[,estim]-data[,"sim_value"])<=k) 
+  return(prob)
+}
+
+#For each size-series combination, we are going to calculate this probability 
+#the tolerance errors will be a sequence of 0 to 5 lags
+prob_results<-data.frame()
+for(siz in unique(results_foci$size)){
+  for(seri in unique(results_foci$serie)){
+    for (dati in list(results_pearson%>%mutate(metric="Pearson"),
+                      results_aic%>%filter(metric=="AIC"),
+                      results_aic%>%filter(metric=="BIC"),
+                      results_foci%>%mutate(metric="Codec")
+                      )){
+    dat<-dati%>%filter(size==siz,serie==seri)
+    for (num in seq(0,30,by=1)){
+      prob <- equal_prob(num,data = dat,estim = "p1")
+      res<-data.frame("size"=siz,"serie"=seri,"metric"=unique(dat$metric)[1],"k"=num,"prob"=prob)
+      prob_results<-rbind(prob_results,res)
+      }
+    }
+  }
+}
+
+#the plot is very similar to the RMSE. So we are going to add the titles
+prob_results<-prob_results%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferenciated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferenciated",
+))
+
+
+#Now, the plot.
+plot_prob<-ggplot(data=prob_results%>%filter(metric=="Codec",
+                                             k<=5),
+aes(
+  x = as.numeric(k), #The tolerance error
+  y = prob, #The obtained probabilities
+  colour = factor(size, levels = c("100","500","1000","2000","5000")), #Sample size
+  linewidth =  factor(size, levels = c("100","500","1000","2000","5000")), #Sample size
+)) +
+  geom_line()+
+  scale_colour_manual(
+    #Bigger sample sizes are remarked
+    values = c(
+      "100"  = "grey85",
+      "500"  = "grey65",
+      "1000" = "grey45",
+      "2000" = "grey25",
+      "5000" = "black"
+    )
+  )+
+  scale_linewidth_manual(
+    #Bigger sample sizes are remarked
+    values = c(
+      "100"  = 0.5,
+      "500"  = 0.6,
+      "1000" = 0.7,
+      "2000" = 0.8,
+      "5000" = 1),
+      guide="none"
+  )+
+  facet_wrap(~name_serie, 
+             nrow=2)+
+  labs(x="k",
+       y=expression(P(abs(hat(p)[1] - p) < k)),
+       colour="Size",)+
+  theme_linedraw(paper = "white", ink = "gray20") +
+  theme(
+    panel.grid.major = element_blank(), #Panel of the background
+    panel.grid.minor = element_blank(), #Panel inside each serie plot
+    strip.background = element_rect(fill = "white", color = "black"), #Back ground of each serie title
+    strip.text = element_text(color = "black", size = 8.5, face = "bold"), #Title of each serie
+    axis.title.x = element_text(size=11, face = "bold"), 
+    axis.title.y = element_text(size=11, face = "bold"), 
+    legend.position = "bottom",
+    legend.text = element_text(size = 11), 
+    legend.title = element_text(size = 12, face = "bold"), #"Sample size" text
+  )
+
+#How to interpret:
+# since is the probability of a correct estimation under certain level of tolerance
+# The biggest, the best. And the less tolerance k the probabilities need to reach 1, the best
+# Its expected a dominance of bigger sample sizes, i.e, sample sizes 5000 and 2000 will reach higher probabilities in most series
+
+ggsave(filename=paste0("plots/errors/Prob_FOCI_p1.pdf"),
+       plot=plot_prob,units = "cm",
+       width = 42,height = 18, dpi=600)
+
+
+#Now, the plot.
+plot_prob2<-ggplot(data=prob_results%>%filter(size==5000),
+                  aes(
+                    x = as.numeric(k), #The tolerance error
+                    y = prob, #The obtained probabilities
+                    colour = metric,#factor(size, levels = c("100","500","1000","2000","5000")), #Sample size
+                    linewidth =  metric,#factor(size, levels = c("100","500","1000","2000","5000")), #Sample size
+                    linetype= metric
+                  )) +
+  geom_line()+
+  scale_colour_manual(
+    values = c(
+      "Codec" = "black",
+      "AIC" = "gray30",
+      "BIC" = "gray50",
+      "Pearson" = "gray20"
+    )
+  )+
+  scale_linetype_manual(
+    values = c(
+      "Codec" = "solid",
+      "AIC" = "dashed",
+      "BIC" = "dotdash",
+      "Pearson" = "dotted"
+    )
+  ) +
+  
+  scale_linewidth_manual(
+    values = c(
+      "Codec" = 1.2,
+      "AIC" = 0.8,
+      "BIC" = 0.8,
+      "Pearson" = 0.8
+    )
+  ) +
+  facet_wrap(~name_serie, 
+             nrow=2)+
+  labs(x="k",
+       y=expression(P(abs(hat(p)[1] - p) < k)),
+       colour="Measure",
+       linetype="Measure",
+       linewidth="Measure")+
+  theme_linedraw(paper = "white", ink = "gray20") +
+  theme(
+    panel.grid.major = element_blank(), #Panel of the background
+    panel.grid.minor = element_blank(), #Panel inside each serie plot
+    strip.background = element_rect(fill = "white", color = "black"), #Back ground of each serie title
+    strip.text = element_text(color = "black", size = 8.5, face = "bold"), #Title of each serie
+    axis.title.x = element_text(size=11, face = "bold"), # hat p axis
+    axis.title.y = element_text(size=11, face = "bold"), #"Size" Axis
+    legend.position = "bottom",
+    legend.text = element_text(size = 11), #AIC, BIC, Codec and Pearson text
+    legend.title = element_text(size = 12, face = "bold"), #"Measure" text
+    legend.key.width = unit(1.8, "cm") #Width of legend icon
+  )
+
+
+ggsave(filename=paste0("plots/errors/Prob_comparison.pdf"),
+       plot=plot_prob2,units = "cm",
+       width = 42,height = 18, dpi=600)
+  
+ 

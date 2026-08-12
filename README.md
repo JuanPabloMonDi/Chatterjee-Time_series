@@ -26,7 +26,7 @@ This repository contains the following components:
 5.  **Simulation.R**: Monte Carlo simulation. This code constructs each of the time series generating processes and implements the auto-association measures considered for estimating the autocorrelation parameter $p$. The results are saved in the *`Results_sim`* folder.
 6.  **plots.R**: After running *Simulation.R*, this script generates the plots shown in the paper (output is saved in the *`plots`* folder).
 7.  **Errors.R**: After running *Simulation.R*, or loading the results csv files, this script generates the error tables and plots shown in the paper, as well as some supplementary material (output is saved in the *`plots/errors`* folder).
-8.  **Application.R**:
+8.  **Application_real_data.R**: As the name of the files says, this code implements the FOCI algorithm to estimate the autoregressive order $p$ on some benchmark datasets. These datasets are:
 
 > [!NOTE]
 >
