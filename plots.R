@@ -45,12 +45,13 @@ rm(results_fociB,results_fociC)
 
 ## AIC & BIC ----------------------------------------------------------
 results_aicB<- read_csv("Results_sim/Results_simB/Results_AIC.csv")
+results_aicB<-results_aicB%>%mutate(metric="AIC")
 results_aicC<- read_csv("Results_sim/Results_simC/Results_AIC.csv")
 results_aicC<-results_aicC%>%mutate(sim=sim+100, metric="AIC")
 results_bicB<- read_csv("Results_sim/Results_simB/Results_BIC.csv")
+results_bicB<-results_bicB%>%mutate(metric="BIC")
 results_bicC<- read_csv("Results_sim/Results_simC/Results_BIC.csv")
 results_bicC<-results_bicC%>%mutate(sim=sim+100, metric="BIC")
-
 
 results_aic<-rbind(results_aicB,results_aicC,
                    results_bicB,results_bicC)
