@@ -424,10 +424,12 @@ error_plot<-function(error="RMSE",estimator="p1",measures=c("AIC","BIC","Codec",
 }
 
 
-assoc<-c("AIC","BIC","Codec","Pearson")
+
 for(er in unique(Errors$Error)){
   for(param in unique(Errors$Estimator)){
-    if(param!="p1"){assoc<-c("Codec","Pearson")}
+    if(param!="p1"){assoc<-c("Codec","Pearson")}else{
+      assoc<-c("AIC","BIC","Codec","Pearson")
+    }
     for(geom in c("line","smooth")){
       error_plot(error=er,estimator = param,measures = assoc,geometry = geom)
     }
