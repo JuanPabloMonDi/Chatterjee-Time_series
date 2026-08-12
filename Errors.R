@@ -71,20 +71,9 @@ rm(results_aicB,results_aicC,results_bicB,results_bicC)
 
 # Real value of the parameters
 real_values <- c(5,1,2,3, 4, 2, 2,2,24,24,24,1,3,3)
-names(real_values) <- c("x1",
-                           "x2",
-                           "x3",
-                           "x4",
-                           "x5",
-                           "x6",
-                           "x7",
-                           "x8",
-                           "x9",
-                           "x10",
-                           "x11",
-                           "x12",
-                           "x13",
-                           "x14")
+names(real_values) <- c("x1", "x2",  "x3", "x4",  "x5", "x6",
+                        "x7", "x8", "x9",  "x10", "x11", "x12",
+                        "x13", "x14")
 
 
 
@@ -424,7 +413,7 @@ error_plot<-function(error="RMSE",estimator="p1",measures=c("AIC","BIC","Codec",
 }
 
 
-
+#Now, for each error and estimator, we save the plot of errors
 for(er in unique(Errors$Error)){
   for(param in unique(Errors$Estimator)){
     if(param!="p1"){assoc<-c("Codec","Pearson")}else{

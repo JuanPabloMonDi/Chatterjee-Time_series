@@ -255,7 +255,7 @@ aic_plots      <- mget(ls(pattern = "^aic_plot[0-9]+$"))
 
 
 # Function to save a list of plots
-save_plots <- function(plot_list, folder, width = 10, height = 6, dpi = 600,units="cm") {
+save_plots <- function(plot_list, folder, width = 15, height = 6, dpi = 600,units="cm") {
   
   # Create folder if it doesn't exist
   if (!dir.exists(folder)) {
@@ -283,5 +283,5 @@ save_plots(spearman_plots, "plots/Spearman", units = "in")
 save_plots(kendall_plots,  "plots/Kendall", units = "in")
 save_plots(xi_plots,       "plots/Xi", units = "in")
 save_plots(codec_plots,    "plots/Azadkia-Chatterjee", units = "in")
-save_plots(aic_plots,      "plots/AIC-BIC", units = "in")
+save_plots(aic_plots,      "plots/AIC-BIC", width = 10.2, height = 6, units = "in")
 

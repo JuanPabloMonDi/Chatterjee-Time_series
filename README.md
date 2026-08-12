@@ -16,18 +16,19 @@ This repository contains the following components:
 
 ### 📁 Folders
 
-1.  **results:** Contains csv files with the estimations made by each auto-association method.
+1.  **Results_sim:** Contains csv files with the estimations made by each auto-association method. Inside this folder there are 2 subfolders: *`Results_sim_B`* and *`Results_sim_C`*, each one with the results of the Monte Carlo simulation using $B=100$ simulations.
 2.  **plots:** Stores all the plots and tables used in the article.
 3.  **Miscellaneous Material**: Includes supplementary materials, mainly from earlier versions of the paper.
 
 ### 📄 R Scripts
 
 4.  **Functions.R:** This file defines some functions that are used in the *`Simulation.R`* file.
-5.  **Simulation.R**: Monte Carlo simulation. This code constructs each of the time series generating processes and implements the auto-association measures considered for estimating the autocorrelation parameter $p$. The results are saved in the *`results`* folder.
+5.  **Simulation.R**: Monte Carlo simulation. This code constructs each of the time series generating processes and implements the auto-association measures considered for estimating the autocorrelation parameter $p$. The results are saved in the *`Results_sim`* folder.
 6.  **plots.R**: After running *Simulation.R*, this script generates the plots shown in the paper (output is saved in the *`plots`* folder).
+7.  **Errors.R**: After running *Simulation.R*, or loading the results csv files, this script generates the error tables and plots shown in the paper, as well as some supplementary material (output is saved in the *`plots/errors`* folder).
+8.  **Application.R**:
 
-## Next steps:
-
-- If necessary, we may add a link to a Google Drive folder with some csv files or RData to give the option of avoid intensive computation parts.
-
-- In case you wanna cite this GitHub, please use the same citation of the paper.
+> [!NOTE]
+>
+> - In case you wanna cite this GitHub, please use the same citation of the paper.
+> - Feel free to contact the authors to give your feedback about the code and implementation.
