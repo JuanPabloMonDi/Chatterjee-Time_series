@@ -16,9 +16,8 @@ This repository contains the following components:
 
 ### 📁 Folders
 
-1.  **Results_sim:** Contains csv files with the estimations made by each auto-association method. Inside this folder there are 2 subfolders: *`Results_sim_B`* and *`Results_sim_C`*, each one with the results of the Monte Carlo simulation using $B=100$ simulations.
+1.  **Results_sim:** Contains CSV files with the estimates obtained by each auto-association method. The folder is divided into two subfolders, *`Results_sim_B`* and *`Results_sim_C`*, which contains results from two independent runs of the same Monte Carlo simulation, differing only in the random seed. Each run includes $B=100$ simulations, for a total of $200$ ***Monte Carlo Simulations*** .
 2.  **plots:** Stores all the plots and tables used in the article.
-3.  **Miscellaneous Material**: Includes supplementary materials, mainly from earlier versions of the paper.
 
 ### 📄 R Scripts
 
@@ -26,7 +25,14 @@ This repository contains the following components:
 5.  **Simulation.R**: Monte Carlo simulation. This code constructs each of the time series generating processes and implements the auto-association measures considered for estimating the autocorrelation parameter $p$. The results are saved in the *`Results_sim`* folder.
 6.  **plots.R**: After running *Simulation.R*, this script generates the plots shown in the paper (output is saved in the *`plots`* folder).
 7.  **Errors.R**: After running *Simulation.R*, or loading the results csv files, this script generates the error tables and plots shown in the paper, as well as some supplementary material (output is saved in the *`plots/errors`* folder).
-8.  **Application_real_data.R**: As the name of the files says, this code implements the FOCI algorithm to estimate the autoregressive order $p$ on some benchmark datasets. These datasets are:
+8.  **Application_real_data.R**: As indicated by the file name, this script implements the FOCI algorithm to estimate the autoregressive order $p$ on considered benchmark datasets. These datasets are:
+    - The annual number of sunspots between 1700 and 1988, available in the `datasets` R package.
+
+    - The annual number of lynx specimens trapped in Canada between 1821 and 1934, available in the `datasets` R package.
+
+    - The monthly number of an airline passengers between 1949 and 1960, available in `datasets` R package.
+
+    - The daily minimum temperatures in Melbourne, Australia, 1981-1990, originally provided by the Australian Bureau of Meteorology and publicly available through the Machine Learning Datasets repository of [jbrownlee](https://github.com/jbrownlee/Datasets) user.
 
 > [!NOTE]
 >
