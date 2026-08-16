@@ -98,7 +98,7 @@ for (size in sizes){
     x1<-arima.sim(n=size,list(ar=c(0.5,-0.2,0.1,0.2,0.1)))
     
     #2. ARMA(1,3)
-    x2<-arima.sim(n=size,list(ar=c(-0.75),ma=c(-0.5,1.5,1)))
+    x2<-arima.sim(n=size,list(ar=c(-0.75),ma=c(-0.5,0.5,.15)))
     
     #3.ARIMA(2,1,1)
     x3<-arima.sim(list(order=c(2,1,1),ar=c(0.7,-0.5),ma=0.4),n=size-1)
@@ -111,7 +111,7 @@ for (size in sizes){
     
     #5. Non linear AR(4) with sine and logistic function
     x5<-rnorm(4,0,1)
-    for (i in 4:size){
+    for (i in 5:size){
       x5<-append(x5,3*sin(x5[i-1])+2*sin(x5[i-2]/3)+0.5*sin(x5[i-3]/2)-3*1/(1+exp(x5[i-4]))+rnorm(1))
     }
     
@@ -183,7 +183,7 @@ for (size in sizes){
     #13. ARIMA(3,1,0)
     x13<-arima.sim(list(order=c(3,1,0),ar=c(0.6,-0.25,.3)),n=size)
     
-    #14. ARIMA(3,1,0) differenciated
+    #14. ARIMA(3,1,0) differentiated
     x14<-diff(x13,lag=1)
     x13<-tail(x13,size)
     

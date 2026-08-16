@@ -18,6 +18,23 @@ results_pearsonC<-results_pearsonC%>%mutate(sim=sim+100)
 results_pearson<-rbind(results_pearsonB,results_pearsonC)
 rm(results_pearsonB,results_pearsonC)
 
+results_pearson<-results_pearson%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
+))
+
 
 #### Spearman coefficient  ---------------------------------------------------------
 results_spearmanB<- read_csv("Results_sim/Results_simB/Results_Spearman.csv")
@@ -26,6 +43,23 @@ results_spearmanC<-results_spearmanC%>%mutate(sim=sim+100) #this is just to enum
 results_spearman<-rbind(results_spearmanB,results_spearmanC)
 rm(results_spearmanB,results_spearmanC)
 
+results_spearman<-results_spearman%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
+))
+
 #### Kendall Rank coefficient ------------------------------------------------
 results_kendallB<- read_csv("Results_sim/Results_simB/Results_Kendall.csv")
 results_kendallC<- read_csv("Results_sim/Results_simC/Results_Kendall.csv")
@@ -33,6 +67,22 @@ results_kendallC<-results_kendallC%>%mutate(sim=sim+100)
 results_kendall<-rbind(results_kendallB,results_kendallC)
 rm(results_kendallB,results_kendallC)
 
+results_kendall<-results_kendall%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
+))
 
 #### Chatterjee's Xi ----------------------------------------------------
 results_xiB<- read_csv("Results_sim/Results_simB/Results_Chatterjee.csv")
@@ -41,6 +91,23 @@ results_xiC<-results_xiC%>%mutate(sim=sim+100)
 results_xi<-rbind(results_xiB,results_xiC)
 rm(results_xiB,results_xiC)
 
+results_xi<-results_xi%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
+))
+
 
 #### Azadkia-Chatterjee FOCI-CODEC ----------------------------------------------
 results_fociB<- read_csv("Results_sim/Results_simB/Results_FOCI.csv")
@@ -48,6 +115,23 @@ results_fociC<- read_csv("Results_sim/Results_simC/Results_FOCI.csv")
 results_fociC<-results_fociC%>%mutate(sim=sim+100)
 results_foci<-rbind(results_fociB,results_fociC)
 rm(results_fociB,results_fociC)
+
+results_foci<-results_foci%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
+))
 
 
 #### AIC & BIC ----------------------------------------------------------
@@ -64,6 +148,23 @@ results_bicC<-results_bicC%>%mutate(sim=sim+100, metric="BIC")
 results_aic<-rbind(results_aicB,results_aicC,
                    results_bicB,results_bicC)
 rm(results_aicB,results_aicC,results_bicB,results_bicC)
+
+results_aic<-results_aic%>%mutate(name_serie=case_when(
+  serie=="x1"~"AR(5)",
+  serie=="x2"~"ARMA(1,3)",
+  serie=="x3"~"ARIMA(2,1,1)",
+  serie=="x4"~"NLAR(3)",
+  serie=="x5"~"NLAR(4)",
+  serie=="x6"~"NLARMA(2,2)",
+  serie=="x7"~"SETAR(2,2,[2])",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
+  serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
+  serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
+  serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
+  serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
+  serie=="x13"~"ARIMA(3,1,0)",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
+))
 
 
 
@@ -95,7 +196,7 @@ results_aic <- results_aic %>%
 
 #### ----------------- Root Mean Squared Error (RMSE) ----------------------- 
 results_rmsePearson <- results_pearson %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, sim_value),
     RMSE_p2 = rmse(p2, sim_value),
@@ -105,7 +206,7 @@ results_rmsePearson <- results_pearson %>%
   ungroup()
 
 results_rmseSpearman <- results_spearman %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, sim_value),
     RMSE_p2 = rmse(p2, sim_value),
@@ -115,7 +216,7 @@ results_rmseSpearman <- results_spearman %>%
   ungroup()
 
 results_rmseKendall <- results_kendall %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, sim_value),
     RMSE_p2 = rmse(p2, sim_value),
@@ -125,7 +226,7 @@ results_rmseKendall <- results_kendall %>%
   ungroup()
 
 results_rmseXi <- results_xi %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, sim_value),
     RMSE_p2 = rmse(p2, sim_value),
@@ -135,7 +236,7 @@ results_rmseXi <- results_xi %>%
   ungroup()
 
 results_rmseCodec <- results_foci %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     RMSE_p1 = rmse(p1, sim_value),
     RMSE_p2 = rmse(p2, sim_value),
@@ -145,7 +246,7 @@ results_rmseCodec <- results_foci %>%
   ungroup()
 
 results_rmseAIC<- results_aic %>%
-  group_by(size, serie,metric) %>%
+  group_by(size, serie,name_serie,metric) %>%
   summarise(
     RMSE_p1 = rmse(p1, sim_value),
     .groups = "drop"
@@ -155,7 +256,7 @@ results_rmseAIC<- results_aic %>%
 #### -------- Mean Absolute Error (MAE) -----------
 
 results_maePearson <- results_pearson %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAE_p1 = mae(p1, sim_value),
     MAE_p2 = mae(p2, sim_value),
@@ -165,7 +266,7 @@ results_maePearson <- results_pearson %>%
   ungroup()
 
 results_maeSpearman <- results_spearman %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAE_p1 = mae(p1, sim_value),
     MAE_p2 = mae(p2, sim_value),
@@ -175,7 +276,7 @@ results_maeSpearman <- results_spearman %>%
   ungroup()
 
 results_maeKendall <- results_kendall %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAE_p1 = mae(p1, sim_value),
     MAE_p2 = mae(p2, sim_value),
@@ -185,7 +286,7 @@ results_maeKendall <- results_kendall %>%
   ungroup()
 
 results_maeXi <- results_xi %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAE_p1 = mae(p1, sim_value),
     MAE_p2 = mae(p2, sim_value),
@@ -195,7 +296,7 @@ results_maeXi <- results_xi %>%
   ungroup()
 
 results_maeCodec <- results_foci %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAE_p1 = mae(p1, sim_value),
     MAE_p2 = mae(p2, sim_value),
@@ -205,7 +306,7 @@ results_maeCodec <- results_foci %>%
   ungroup()
 
 results_maeAIC <- results_aic %>%
-  group_by(size, serie,metric) %>%
+  group_by(size, serie,name_serie,metric) %>%
   summarise(
     MAE_p1 = mae(p1, sim_value),
     .groups = "drop"
@@ -215,7 +316,7 @@ results_maeAIC <- results_aic %>%
 
 #### -------- Median Absolute Deviation (MAD) -------
 results_madPearson <- results_pearson %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAD_p1 = mad(p1, sim_value),
     MAD_p2 = mad(p2, sim_value),
@@ -226,7 +327,7 @@ results_madPearson <- results_pearson %>%
 
 
 results_madSpearman <- results_spearman %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAD_p1 = mad(p1, sim_value),
     MAD_p2 = mad(p2, sim_value),
@@ -236,7 +337,7 @@ results_madSpearman <- results_spearman %>%
   ungroup()
 
 results_madKendall <- results_kendall %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAD_p1 = mad(p1, sim_value),
     MAD_p2 = mad(p2, sim_value),
@@ -246,7 +347,7 @@ results_madKendall <- results_kendall %>%
   ungroup()
 
 results_madXi <- results_xi %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAD_p1 = mad(p1, sim_value),
     MAD_p2 = mad(p2, sim_value),
@@ -256,7 +357,7 @@ results_madXi <- results_xi %>%
   ungroup()
 
 results_madCodec <- results_foci %>%
-  group_by(size, serie) %>%
+  group_by(size, serie, name_serie) %>%
   summarise(
     MAD_p1 = mad(p1, sim_value),
     MAD_p2 = mad(p2, sim_value),
@@ -267,7 +368,7 @@ results_madCodec <- results_foci %>%
 
 
 results_madAIC <- results_aic %>%
-  group_by(size, serie,metric) %>%
+  group_by(size, serie,name_serie,metric) %>%
   summarise(
     MAD_p1 = mad(p1, sim_value),
     .groups = "drop"
@@ -307,7 +408,7 @@ resultsMAD<-rbind(results_madPearson,results_madSpearman,results_madXi,results_m
 resultsRMSE$Error<-"RMSE"
 resultsMAE$Error<-"MAE"
 resultsMAD$Error<-"MAD"
-colnames(resultsRMSE)<-c("Size","Serie","p1","p2","p3","Coefficient","Error")
+colnames(resultsRMSE)<-c("Size","Serie","name_serie","p1","p2","p3","Coefficient","Error")
 colnames(resultsMAE)<-colnames(resultsMAD)<-colnames(resultsRMSE)
 Errors<-rbind(resultsRMSE,resultsMAE,resultsMAD)
 
@@ -318,28 +419,13 @@ results_rmseAIC<-results_rmseAIC%>%rename(Coefficient=metric,Value=RMSE_p1)%>%mu
 results_maeAIC<-results_maeAIC%>%rename(Coefficient=metric,Value=MAE_p1)%>%mutate(Error="MAE", Estimator="p1")
 results_madAIC<-results_madAIC%>%rename(Coefficient=metric,Value=MAD_p1)%>%mutate(Error="MAD", Estimator="p1")
 errors_AIC<-rbind(results_rmseAIC,results_maeAIC,results_madAIC)
-colnames(errors_AIC)[c(1,2)]<-c("Size","Serie")
+colnames(errors_AIC)[c(1,2,3)]<-c("Size","Serie","name_serie")
 Errors<-rbind(Errors,errors_AIC)
 
 
+#Save errors
 
-Errors<-Errors%>%mutate(name_serie=case_when(
-  Serie=="x1"~"AR(5)",
-  Serie=="x2"~"ARMA(1,3)",
-  Serie=="x3"~"ARIMA(2,1,1)",
-  Serie=="x4"~"NLAR(3)",
-  Serie=="x5"~"NLAR(4)",
-  Serie=="x6"~"NLARMA(2,2)",
-  Serie=="x7"~"SETAR(2,2,[2])",
-  Serie=="x8"~"ARIMA(2,1,1) \nDifferenciated",
-  Serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
-  Serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
-  Serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
-  Serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
-  Serie=="x13"~"ARIMA(3,1,0)",
-  Serie=="x14"~"ARIMA(3,1,0) \nDifferenciated",
-))
-
+write.csv(Errors,file = "plots/errors/Errors_table.csv", row.names = FALSE)
 
 error_plot<-function(error="RMSE",estimator="p1",measures=c("AIC","BIC","Codec","Pearson"),data=Errors,geometry="line", save=TRUE){
   
@@ -419,7 +505,7 @@ for(er in unique(Errors$Error)){
     if(param!="p1"){assoc<-c("Codec","Pearson")}else{
       assoc<-c("AIC","BIC","Codec","Pearson")
     }
-    for(geom in c("line","smooth")){
+    for(geom in c("line")){
       error_plot(error=er,estimator = param,measures = assoc,geometry = geom)
     }
   }
@@ -429,8 +515,7 @@ for(er in unique(Errors$Error)){
 
 # Probability of a correct estimation --------------------------------------------
 
-#This analysis is for foci only. 
-#The idea es to evaluate the probability P(|\hat p_1-p|<=k)
+#The idea is to evaluate the probability P(|\hat p_1-p|<=k)
 #Where k is a tolerance error
 #Since p is discrete and have non negative support. the values of k are integers
 
@@ -469,68 +554,20 @@ prob_results<-prob_results%>%mutate(name_serie=case_when(
   serie=="x5"~"NLAR(4)",
   serie=="x6"~"NLARMA(2,2)",
   serie=="x7"~"SETAR(2,2,[2])",
-  serie=="x8"~"ARIMA(2,1,1) \nDifferenciated",
+  serie=="x8"~"ARIMA(2,1,1) \nDifferentiated",
   serie=="x9"~"SARIMA(4,0,0) × (2,0,0)[12]",
   serie=="x10"~"SARIMA(4,0,0) × (2,0,0)[12] \nAdditive decomposition",
   serie=="x11"~"SARIMA(4,0,0) × (2,0,0)[12] \n Multiplicative decomposition",
   serie=="x12"~"ARMA(1,0,1)-GARCH(1,1)",
   serie=="x13"~"ARIMA(3,1,0)",
-  serie=="x14"~"ARIMA(3,1,0) \nDifferenciated",
+  serie=="x14"~"ARIMA(3,1,0) \nDifferentiated",
 ))
 
 
-#Now, the plot.
-plot_prob<-ggplot(data=prob_results%>%filter(metric=="Codec",
-                                             k<=5),
-aes(
-  x = as.numeric(k), #The tolerance error
-  y = prob, #The obtained probabilities
-  colour = factor(size, levels = c("100","500","1000","2000","5000")), #Sample size
-  linewidth =  factor(size, levels = c("100","500","1000","2000","5000")), #Sample size
-)) +
-  geom_line()+
-  scale_colour_manual(
-    #Bigger sample sizes are remarked
-    values = c(
-      "100"  = "grey85",
-      "500"  = "grey65",
-      "1000" = "grey45",
-      "2000" = "grey25",
-      "5000" = "black"
-    )
-  )+
-  scale_linewidth_manual(
-    #Bigger sample sizes are remarked
-    values = c(
-      "100"  = 0.5,
-      "500"  = 0.6,
-      "1000" = 0.7,
-      "2000" = 0.8,
-      "5000" = 1),
-      guide="none"
-  )+
-  facet_wrap(~name_serie, 
-             nrow=2)+
-  labs(x="k",
-       y=expression(P(abs(hat(p)[1] - p) < k)),
-       colour="Size",)+
-  theme_linedraw(paper = "white", ink = "gray20") +
-  theme(
-    panel.grid.major = element_blank(), #Panel of the background
-    panel.grid.minor = element_blank(), #Panel inside each serie plot
-    strip.background = element_rect(fill = "white", color = "black"), #Back ground of each serie title
-    strip.text = element_text(color = "black", size = 8.5, face = "bold"), #Title of each serie
-    axis.title.x = element_text(size=11, face = "bold"), 
-    axis.title.y = element_text(size=11, face = "bold"), 
-    legend.position = "bottom",
-    legend.text = element_text(size = 11), 
-    legend.title = element_text(size = 12, face = "bold"), #"Sample size" text
-  )
 
 #How to interpret:
 # since is the probability of a correct estimation under certain level of tolerance
 # The biggest, the best. And the less tolerance k the probabilities need to reach 1, the best
-# Its expected a dominance of bigger sample sizes, i.e, sample sizes 5000 and 2000 will reach higher probabilities in most series
 
 ggsave(filename=paste0("plots/errors/Prob_FOCI_p1.pdf"),
        plot=plot_prob,units = "cm",
@@ -538,7 +575,8 @@ ggsave(filename=paste0("plots/errors/Prob_FOCI_p1.pdf"),
 
 
 #Now, the plot.
-plot_prob2<-ggplot(data=prob_results%>%filter(size==5000),
+plot_prob2<-ggplot(data=prob_results%>%filter(size==5000,
+                                              k<=5),
                   aes(
                     x = as.numeric(k), #The tolerance error
                     y = prob, #The obtained probabilities
@@ -597,5 +635,3 @@ plot_prob2<-ggplot(data=prob_results%>%filter(size==5000),
 ggsave(filename=paste0("plots/errors/Prob_comparison.pdf"),
        plot=plot_prob2,units = "cm",
        width = 42,height = 18, dpi=600)
-  
- 
